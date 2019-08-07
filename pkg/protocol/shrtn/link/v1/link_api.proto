@@ -26,6 +26,9 @@ option java_package = "org.zenithar.shrtn.link.v1";
 option objc_class_prefix = "SLX";
 option php_namespace = "Shrtn\\Link\\V1";
 
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "shrtn/link/v1/link.proto";
+
 // LinkApi is the link management service.
 service LinkAPI {
   // Create a shortened url entry.
@@ -39,27 +42,24 @@ service LinkAPI {
 // -----------------------------------------------------------------------------
 
 message CreateRequest {
-  string url = 1;
-  string description = 2;
+  string url = 1 [(gogoproto.jsontag) = "url"];
+  string description = 2 [(gogoproto.jsontag) = "description"];
 }
 
 message CreateResponse {
-  string hash = 1;
+  Link link = 1 [(gogoproto.jsontag) = "link"];
 }
 
 message ResolveRequest {
-  string hash = 1;
+  string hash = 1 [(gogoproto.jsontag) = "hash"];
 }
 
 message ResolveResponse {
-  string url = 1;
-  string description = 2;
+  Link link = 1 [(gogoproto.jsontag) = "link"];
 }
 
 message DeleteRequest {
-  string hash = 1;
+  string hash = 1 [(gogoproto.jsontag) = "hash"];
 }
 
-message DeleteResponse {
-  string hash = 1;
-}
+message DeleteResponse {}

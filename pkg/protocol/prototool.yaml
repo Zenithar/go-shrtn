@@ -20,9 +20,13 @@ generate:
   go_options:
     import_path: go.zenithar.org/shrtn/pkg/protocol
   plugins:
-    - name: gogo
+    - name: gogofast
       type: gogo
       flags: plugins=grpc
+      output: ../gen/go
+    - name: validate
+      type: gogo
+      flags: lang=gogo
       output: ../gen/go
     - name: mock
       type: gogo

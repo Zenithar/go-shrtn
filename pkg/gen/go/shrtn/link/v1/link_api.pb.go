@@ -6,8 +6,10 @@ package linkv1
 import (
 	context "context"
 	fmt "fmt"
+	io "io"
 	math "math"
 
+	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	grpc "google.golang.org/grpc"
 )
@@ -24,8 +26,8 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
 type CreateRequest struct {
-	Url                  string   `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
-	Description          string   `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	Url                  string   `protobuf:"bytes,1,opt,name=url,proto3" json:"url"`
+	Description          string   `protobuf:"bytes,2,opt,name=description,proto3" json:"description"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -39,11 +41,20 @@ func (*CreateRequest) Descriptor() ([]byte, []int) {
 }
 
 func (m *CreateRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateRequest.Unmarshal(m, b)
+	return m.Unmarshal(b)
 }
 
 func (m *CreateRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateRequest.Marshal(b, m, deterministic)
+	if deterministic {
+		return xxx_messageInfo_CreateRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
 }
 
 func (m *CreateRequest) XXX_Merge(src proto.Message) {
@@ -51,7 +62,7 @@ func (m *CreateRequest) XXX_Merge(src proto.Message) {
 }
 
 func (m *CreateRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateRequest.Size(m)
+	return m.Size()
 }
 
 func (m *CreateRequest) XXX_DiscardUnknown() {
@@ -75,7 +86,7 @@ func (m *CreateRequest) GetDescription() string {
 }
 
 type CreateResponse struct {
-	Hash                 string   `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	Link                 *Link    `protobuf:"bytes,1,opt,name=link,proto3" json:"link"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -89,11 +100,20 @@ func (*CreateResponse) Descriptor() ([]byte, []int) {
 }
 
 func (m *CreateResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateResponse.Unmarshal(m, b)
+	return m.Unmarshal(b)
 }
 
 func (m *CreateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateResponse.Marshal(b, m, deterministic)
+	if deterministic {
+		return xxx_messageInfo_CreateResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
 }
 
 func (m *CreateResponse) XXX_Merge(src proto.Message) {
@@ -101,7 +121,7 @@ func (m *CreateResponse) XXX_Merge(src proto.Message) {
 }
 
 func (m *CreateResponse) XXX_Size() int {
-	return xxx_messageInfo_CreateResponse.Size(m)
+	return m.Size()
 }
 
 func (m *CreateResponse) XXX_DiscardUnknown() {
@@ -110,15 +130,15 @@ func (m *CreateResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_CreateResponse proto.InternalMessageInfo
 
-func (m *CreateResponse) GetHash() string {
+func (m *CreateResponse) GetLink() *Link {
 	if m != nil {
-		return m.Hash
+		return m.Link
 	}
-	return ""
+	return nil
 }
 
 type ResolveRequest struct {
-	Hash                 string   `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	Hash                 string   `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -132,11 +152,20 @@ func (*ResolveRequest) Descriptor() ([]byte, []int) {
 }
 
 func (m *ResolveRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ResolveRequest.Unmarshal(m, b)
+	return m.Unmarshal(b)
 }
 
 func (m *ResolveRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ResolveRequest.Marshal(b, m, deterministic)
+	if deterministic {
+		return xxx_messageInfo_ResolveRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
 }
 
 func (m *ResolveRequest) XXX_Merge(src proto.Message) {
@@ -144,7 +173,7 @@ func (m *ResolveRequest) XXX_Merge(src proto.Message) {
 }
 
 func (m *ResolveRequest) XXX_Size() int {
-	return xxx_messageInfo_ResolveRequest.Size(m)
+	return m.Size()
 }
 
 func (m *ResolveRequest) XXX_DiscardUnknown() {
@@ -161,8 +190,7 @@ func (m *ResolveRequest) GetHash() string {
 }
 
 type ResolveResponse struct {
-	Url                  string   `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
-	Description          string   `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	Link                 *Link    `protobuf:"bytes,1,opt,name=link,proto3" json:"link"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -176,11 +204,20 @@ func (*ResolveResponse) Descriptor() ([]byte, []int) {
 }
 
 func (m *ResolveResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ResolveResponse.Unmarshal(m, b)
+	return m.Unmarshal(b)
 }
 
 func (m *ResolveResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ResolveResponse.Marshal(b, m, deterministic)
+	if deterministic {
+		return xxx_messageInfo_ResolveResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
 }
 
 func (m *ResolveResponse) XXX_Merge(src proto.Message) {
@@ -188,7 +225,7 @@ func (m *ResolveResponse) XXX_Merge(src proto.Message) {
 }
 
 func (m *ResolveResponse) XXX_Size() int {
-	return xxx_messageInfo_ResolveResponse.Size(m)
+	return m.Size()
 }
 
 func (m *ResolveResponse) XXX_DiscardUnknown() {
@@ -197,22 +234,15 @@ func (m *ResolveResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ResolveResponse proto.InternalMessageInfo
 
-func (m *ResolveResponse) GetUrl() string {
+func (m *ResolveResponse) GetLink() *Link {
 	if m != nil {
-		return m.Url
+		return m.Link
 	}
-	return ""
-}
-
-func (m *ResolveResponse) GetDescription() string {
-	if m != nil {
-		return m.Description
-	}
-	return ""
+	return nil
 }
 
 type DeleteRequest struct {
-	Hash                 string   `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	Hash                 string   `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -226,11 +256,20 @@ func (*DeleteRequest) Descriptor() ([]byte, []int) {
 }
 
 func (m *DeleteRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteRequest.Unmarshal(m, b)
+	return m.Unmarshal(b)
 }
 
 func (m *DeleteRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteRequest.Marshal(b, m, deterministic)
+	if deterministic {
+		return xxx_messageInfo_DeleteRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
 }
 
 func (m *DeleteRequest) XXX_Merge(src proto.Message) {
@@ -238,7 +277,7 @@ func (m *DeleteRequest) XXX_Merge(src proto.Message) {
 }
 
 func (m *DeleteRequest) XXX_Size() int {
-	return xxx_messageInfo_DeleteRequest.Size(m)
+	return m.Size()
 }
 
 func (m *DeleteRequest) XXX_DiscardUnknown() {
@@ -255,7 +294,6 @@ func (m *DeleteRequest) GetHash() string {
 }
 
 type DeleteResponse struct {
-	Hash                 string   `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -269,11 +307,20 @@ func (*DeleteResponse) Descriptor() ([]byte, []int) {
 }
 
 func (m *DeleteResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteResponse.Unmarshal(m, b)
+	return m.Unmarshal(b)
 }
 
 func (m *DeleteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteResponse.Marshal(b, m, deterministic)
+	if deterministic {
+		return xxx_messageInfo_DeleteResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
 }
 
 func (m *DeleteResponse) XXX_Merge(src proto.Message) {
@@ -281,7 +328,7 @@ func (m *DeleteResponse) XXX_Merge(src proto.Message) {
 }
 
 func (m *DeleteResponse) XXX_Size() int {
-	return xxx_messageInfo_DeleteResponse.Size(m)
+	return m.Size()
 }
 
 func (m *DeleteResponse) XXX_DiscardUnknown() {
@@ -289,13 +336,6 @@ func (m *DeleteResponse) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_DeleteResponse proto.InternalMessageInfo
-
-func (m *DeleteResponse) GetHash() string {
-	if m != nil {
-		return m.Hash
-	}
-	return ""
-}
 
 func init() {
 	proto.RegisterType((*CreateRequest)(nil), "shrtn.link.v1.CreateRequest")
@@ -309,27 +349,32 @@ func init() {
 func init() { proto.RegisterFile("shrtn/link/v1/link_api.proto", fileDescriptor_34be30ff2a9d816a) }
 
 var fileDescriptor_34be30ff2a9d816a = []byte{
-	// 311 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x29, 0xce, 0x28, 0x2a,
-	0xc9, 0xd3, 0xcf, 0xc9, 0xcc, 0xcb, 0xd6, 0x2f, 0x33, 0x04, 0xd3, 0xf1, 0x89, 0x05, 0x99, 0x7a,
-	0x05, 0x45, 0xf9, 0x25, 0xf9, 0x42, 0xbc, 0x60, 0x59, 0x3d, 0x90, 0xa8, 0x5e, 0x99, 0xa1, 0x92,
-	0x33, 0x17, 0xaf, 0x73, 0x51, 0x6a, 0x62, 0x49, 0x6a, 0x50, 0x6a, 0x61, 0x69, 0x6a, 0x71, 0x89,
-	0x90, 0x00, 0x17, 0x73, 0x69, 0x51, 0x8e, 0x04, 0xa3, 0x02, 0xa3, 0x06, 0x67, 0x10, 0x88, 0x29,
-	0xa4, 0xc0, 0xc5, 0x9d, 0x92, 0x5a, 0x9c, 0x5c, 0x94, 0x59, 0x50, 0x92, 0x99, 0x9f, 0x27, 0xc1,
-	0x04, 0x96, 0x41, 0x16, 0x52, 0x52, 0xe1, 0xe2, 0x83, 0x19, 0x52, 0x5c, 0x90, 0x9f, 0x57, 0x9c,
-	0x2a, 0x24, 0xc4, 0xc5, 0x92, 0x91, 0x58, 0x9c, 0x01, 0x35, 0x06, 0xcc, 0x06, 0xa9, 0x0a, 0x4a,
-	0x2d, 0xce, 0xcf, 0x29, 0x83, 0xdb, 0x85, 0x4d, 0x95, 0x2b, 0x17, 0x3f, 0x5c, 0x15, 0xd4, 0x30,
-	0x72, 0x9c, 0xa4, 0xcc, 0xc5, 0xeb, 0x92, 0x9a, 0x93, 0x5a, 0x82, 0xd7, 0x2e, 0x15, 0x2e, 0x3e,
-	0x98, 0x22, 0xdc, 0xee, 0x36, 0x7a, 0xc8, 0xc8, 0xc5, 0xee, 0x93, 0x99, 0x97, 0xed, 0x18, 0xe0,
-	0x29, 0xe4, 0xca, 0xc5, 0x06, 0xf1, 0xa9, 0x90, 0x8c, 0x1e, 0x4a, 0x40, 0xea, 0xa1, 0x84, 0xa2,
-	0x94, 0x2c, 0x0e, 0x59, 0xa8, 0x35, 0x1e, 0x5c, 0xec, 0x50, 0x4f, 0x0a, 0xa1, 0xab, 0x44, 0x0d,
-	0x22, 0x29, 0x39, 0x5c, 0xd2, 0x50, 0x93, 0x5c, 0xb9, 0xd8, 0x20, 0x5e, 0xc0, 0x70, 0x10, 0x8a,
-	0xf7, 0x31, 0x1c, 0x84, 0xea, 0x6f, 0xa7, 0x28, 0x2e, 0xa9, 0xfc, 0xa2, 0x74, 0xbd, 0xaa, 0xd4,
-	0xbc, 0xcc, 0x92, 0x8c, 0xc4, 0x22, 0x54, 0xc5, 0x4e, 0x3c, 0x60, 0xef, 0x17, 0x64, 0x06, 0x80,
-	0x52, 0x50, 0x00, 0x63, 0x14, 0x1b, 0x48, 0xa2, 0xcc, 0x70, 0x11, 0x13, 0x73, 0xb0, 0x4f, 0xc4,
-	0x2a, 0x26, 0xde, 0x60, 0xb0, 0x6a, 0x90, 0x22, 0xbd, 0x30, 0xc3, 0x53, 0x50, 0x7e, 0x0c, 0x88,
-	0x1f, 0x13, 0x66, 0x98, 0xc4, 0x06, 0x4e, 0x78, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0xc3,
-	0x07, 0x96, 0x70, 0x98, 0x02, 0x00, 0x00,
+	// 398 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x52, 0xd1, 0x8a, 0xda, 0x40,
+	0x14, 0x25, 0x2a, 0xb1, 0xbd, 0x36, 0x5a, 0xd2, 0x17, 0x1b, 0x6c, 0x2c, 0x79, 0xea, 0x8b, 0x13,
+	0x62, 0xbf, 0xa0, 0x51, 0xa1, 0x05, 0x1f, 0x24, 0x82, 0x94, 0x62, 0x29, 0xd1, 0x8e, 0xc9, 0x60,
+	0x36, 0x93, 0x4d, 0x26, 0x79, 0xd8, 0xcf, 0xd9, 0xc7, 0xfd, 0x92, 0x65, 0x9f, 0xf6, 0x0b, 0x64,
+	0xd7, 0x47, 0xbf, 0x62, 0x99, 0x49, 0x14, 0xa3, 0x08, 0xcb, 0xbe, 0xdc, 0xe4, 0xcc, 0x3d, 0x73,
+	0xcf, 0x39, 0x97, 0x81, 0x4e, 0xe2, 0xc7, 0x2c, 0x34, 0x03, 0x12, 0xae, 0xcd, 0xcc, 0x12, 0xdf,
+	0x7f, 0x6e, 0x44, 0x50, 0x14, 0x53, 0x46, 0x55, 0x45, 0x74, 0x11, 0x3f, 0x45, 0x99, 0xa5, 0xf5,
+	0x3c, 0xc2, 0xfc, 0x74, 0x81, 0x96, 0xf4, 0xca, 0xf4, 0xa8, 0x47, 0x4d, 0xc1, 0x5a, 0xa4, 0x2b,
+	0x81, 0x04, 0x10, 0x7f, 0xf9, 0x6d, 0xad, 0x7d, 0x3e, 0x3b, 0xef, 0x18, 0x7f, 0x41, 0x19, 0xc4,
+	0xd8, 0x65, 0xd8, 0xc1, 0xd7, 0x29, 0x4e, 0x98, 0xfa, 0x19, 0xaa, 0x69, 0x1c, 0xb4, 0xa5, 0xaf,
+	0xd2, 0xb7, 0xf7, 0x76, 0x7d, 0xb7, 0xe9, 0x72, 0xe8, 0xf0, 0xa2, 0x5a, 0xd0, 0xf8, 0x8f, 0x93,
+	0x65, 0x4c, 0x22, 0x46, 0x68, 0xd8, 0xae, 0x08, 0x4a, 0x6b, 0xb7, 0xe9, 0x1e, 0x1f, 0x3b, 0xc7,
+	0xc0, 0x18, 0x40, 0x73, 0x3f, 0x3e, 0x89, 0x68, 0x98, 0x60, 0xd5, 0x82, 0x1a, 0x97, 0x17, 0x02,
+	0x8d, 0xfe, 0x27, 0x54, 0xca, 0x85, 0xc6, 0x24, 0x5c, 0xdb, 0xef, 0x76, 0x9b, 0xae, 0x20, 0x39,
+	0xa2, 0x1a, 0x08, 0x9a, 0x0e, 0x4e, 0x68, 0x90, 0x1d, 0x4c, 0x76, 0xa0, 0xe6, 0xbb, 0x89, 0x5f,
+	0xb8, 0x14, 0x7c, 0x8e, 0x1d, 0x51, 0x8d, 0x21, 0xb4, 0x0e, 0xfc, 0xb7, 0xab, 0xf6, 0x40, 0x19,
+	0xe2, 0x00, 0xb3, 0x57, 0x8a, 0x7e, 0x84, 0xe6, 0x9e, 0x9e, 0x6b, 0xf6, 0x9f, 0x25, 0xa8, 0xf3,
+	0xc9, 0x3f, 0x26, 0xbf, 0xd4, 0x11, 0xc8, 0xf9, 0x1e, 0xd4, 0xce, 0x89, 0x76, 0x69, 0xfb, 0xda,
+	0x97, 0x0b, 0xdd, 0x22, 0xc6, 0x4f, 0xa8, 0x17, 0xc9, 0xd4, 0x53, 0x66, 0x79, 0x43, 0x9a, 0x7e,
+	0xa9, 0x5d, 0x4c, 0x1a, 0x81, 0x9c, 0xdb, 0x3d, 0x33, 0x54, 0x0a, 0x7d, 0x66, 0xa8, 0x9c, 0xd1,
+	0x5e, 0xdd, 0x6f, 0x75, 0xe9, 0x71, 0xab, 0x4b, 0x4f, 0x5b, 0x5d, 0x02, 0x8d, 0xc6, 0x1e, 0xba,
+	0xc1, 0x21, 0x61, 0xbe, 0x1b, 0x97, 0x2f, 0xda, 0x1f, 0xc4, 0x2a, 0x22, 0x32, 0xe1, 0xcf, 0x6e,
+	0x22, 0xfd, 0x91, 0x79, 0x23, 0xb3, 0x6e, 0x2b, 0xd5, 0xe9, 0xf8, 0xf7, 0x5d, 0x45, 0x99, 0x0a,
+	0x36, 0x27, 0xa1, 0x99, 0xf5, 0x50, 0xe0, 0x39, 0xc7, 0xf3, 0x99, 0xb5, 0x90, 0xc5, 0x6b, 0xfd,
+	0xfe, 0x12, 0x00, 0x00, 0xff, 0xff, 0xc3, 0xea, 0x8d, 0x69, 0x25, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -475,3 +520,935 @@ var _LinkAPI_serviceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "shrtn/link/v1/link_api.proto",
 }
+
+func (m *CreateRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CreateRequest) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Url) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintLinkApi(dAtA, i, uint64(len(m.Url)))
+		i += copy(dAtA[i:], m.Url)
+	}
+	if len(m.Description) > 0 {
+		dAtA[i] = 0x12
+		i++
+		i = encodeVarintLinkApi(dAtA, i, uint64(len(m.Description)))
+		i += copy(dAtA[i:], m.Description)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+
+func (m *CreateResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CreateResponse) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Link != nil {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintLinkApi(dAtA, i, uint64(m.Link.Size()))
+		n1, err := m.Link.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n1
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+
+func (m *ResolveRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ResolveRequest) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Hash) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintLinkApi(dAtA, i, uint64(len(m.Hash)))
+		i += copy(dAtA[i:], m.Hash)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+
+func (m *ResolveResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ResolveResponse) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Link != nil {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintLinkApi(dAtA, i, uint64(m.Link.Size()))
+		n2, err := m.Link.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n2
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+
+func (m *DeleteRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *DeleteRequest) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Hash) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintLinkApi(dAtA, i, uint64(len(m.Hash)))
+		i += copy(dAtA[i:], m.Hash)
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+
+func (m *DeleteResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *DeleteResponse) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		i += copy(dAtA[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+
+func encodeVarintLinkApi(dAtA []byte, offset int, v uint64) int {
+	for v >= 1<<7 {
+		dAtA[offset] = uint8(v&0x7f | 0x80)
+		v >>= 7
+		offset++
+	}
+	dAtA[offset] = uint8(v)
+	return offset + 1
+}
+
+func (m *CreateRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Url)
+	if l > 0 {
+		n += 1 + l + sovLinkApi(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovLinkApi(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func (m *CreateResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Link != nil {
+		l = m.Link.Size()
+		n += 1 + l + sovLinkApi(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func (m *ResolveRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Hash)
+	if l > 0 {
+		n += 1 + l + sovLinkApi(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func (m *ResolveResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Link != nil {
+		l = m.Link.Size()
+		n += 1 + l + sovLinkApi(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func (m *DeleteRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Hash)
+	if l > 0 {
+		n += 1 + l + sovLinkApi(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func (m *DeleteResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func sovLinkApi(x uint64) (n int) {
+	for {
+		n++
+		x >>= 7
+		if x == 0 {
+			break
+		}
+	}
+	return n
+}
+
+func sozLinkApi(x uint64) (n int) {
+	return sovLinkApi(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+
+func (m *CreateRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowLinkApi
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CreateRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CreateRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Url", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLinkApi
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Url = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLinkApi
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipLinkApi(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+
+func (m *CreateResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowLinkApi
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CreateResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CreateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Link", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLinkApi
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Link == nil {
+				m.Link = &Link{}
+			}
+			if err := m.Link.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipLinkApi(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+
+func (m *ResolveRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowLinkApi
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ResolveRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ResolveRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Hash", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLinkApi
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Hash = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipLinkApi(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+
+func (m *ResolveResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowLinkApi
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ResolveResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ResolveResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Link", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLinkApi
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Link == nil {
+				m.Link = &Link{}
+			}
+			if err := m.Link.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipLinkApi(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+
+func (m *DeleteRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowLinkApi
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DeleteRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DeleteRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Hash", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLinkApi
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Hash = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipLinkApi(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+
+func (m *DeleteResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowLinkApi
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DeleteResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DeleteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipLinkApi(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthLinkApi
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, dAtA[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+
+func skipLinkApi(dAtA []byte) (n int, err error) {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return 0, ErrIntOverflowLinkApi
+			}
+			if iNdEx >= l {
+				return 0, io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		wireType := int(wire & 0x7)
+		switch wireType {
+		case 0:
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowLinkApi
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				iNdEx++
+				if dAtA[iNdEx-1] < 0x80 {
+					break
+				}
+			}
+			return iNdEx, nil
+		case 1:
+			iNdEx += 8
+			return iNdEx, nil
+		case 2:
+			var length int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowLinkApi
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				length |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if length < 0 {
+				return 0, ErrInvalidLengthLinkApi
+			}
+			iNdEx += length
+			if iNdEx < 0 {
+				return 0, ErrInvalidLengthLinkApi
+			}
+			return iNdEx, nil
+		case 3:
+			for {
+				var innerWire uint64
+				var start int = iNdEx
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return 0, ErrIntOverflowLinkApi
+					}
+					if iNdEx >= l {
+						return 0, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					innerWire |= (uint64(b) & 0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				innerWireType := int(innerWire & 0x7)
+				if innerWireType == 4 {
+					break
+				}
+				next, err := skipLinkApi(dAtA[start:])
+				if err != nil {
+					return 0, err
+				}
+				iNdEx = start + next
+				if iNdEx < 0 {
+					return 0, ErrInvalidLengthLinkApi
+				}
+			}
+			return iNdEx, nil
+		case 4:
+			return iNdEx, nil
+		case 5:
+			iNdEx += 4
+			return iNdEx, nil
+		default:
+			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
+		}
+	}
+	panic("unreachable")
+}
+
+var (
+	ErrInvalidLengthLinkApi = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowLinkApi   = fmt.Errorf("proto: integer overflow")
+)

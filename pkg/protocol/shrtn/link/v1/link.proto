@@ -26,9 +26,15 @@ option java_package = "org.zenithar.shrtn.link.v1";
 option objc_class_prefix = "SLX";
 option php_namespace = "Shrtn\\Link\\V1";
 
+import "github.com/envoyproxy/protoc-gen-validate/validate/validate.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
 // Link is a shortened URL.
 message Link {
-  string hash = 1;
-  string url = 2;
-  string description = 3;
+  // Hash contains the url hash used to resolve the url from public side.
+  string hash = 1 [(gogoproto.jsontag) = "hash"];
+  // Url is the explicit url stored matching the hash.
+  string url = 2 [(gogoproto.jsontag) = "url"];
+  // Description is the link description.
+  string description = 3 [(gogoproto.jsontag) = "description"];
 }
