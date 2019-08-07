@@ -14,30 +14,31 @@
  * limitations under the License.
  */
 
-package main
+package cmd
 
 import (
-	"math/rand"
-	"time"
+	"fmt"
 
-	"go.zenithar.org/pkg/log"
-	"go.zenithar.org/shrtn/cli/shrtn/internal/cmd"
+	"github.com/spf13/cobra"
+	"go.zenithar.org/shrtn/internal/version"
 )
 
 // -----------------------------------------------------------------------------
 
-func init() {
-	// Set time locale
-	time.Local = time.UTC
+var displayAsJSON bool
 
-	// Initialize random seed
-	rand.Seed(time.Now().UTC().Unix())
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Display service version",
+	Run: func(cmd *cobra.Command, args []string) {
+		if displayAsJSON {
+			fmt.Printf("%s", version.JSON())
+		} else {
+			fmt.Printf("%s", version.Full())
+		}
+	},
 }
 
-// -----------------------------------------------------------------------------
-
-func main() {
-	if err := cmd.Execute(); err != nil {
-		log.CheckErr("Unable to complete command execution", err)
-	}
+func init() {
+	versionCmd.Flags().BoolVar(&displayAsJSON, "json", false, "Display build info as json")
 }

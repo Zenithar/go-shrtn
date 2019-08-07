@@ -28,13 +28,20 @@ import (
 	"golang.org/x/xerrors"
 )
 
+// Link defines link management service contract
+type Link interface {
+	Create(ctx context.Context, req *linkv1.CreateRequest) (*linkv1.CreateResponse, error)
+	Resolve(ctx context.Context, req *linkv1.ResolveRequest) (*linkv1.ResolveResponse, error)
+	Delete(ctx context.Context, req *linkv1.DeleteRequest) (*linkv1.DeleteResponse, error)
+}
+
 type service struct {
 	h     hasher.Hasher
 	links repositories.Link
 }
 
 // New returns a service instance
-func New(links repositories.Link, h hasher.Hasher) linkv1.LinkAPIServer {
+func New(links repositories.Link, h hasher.Hasher) Link {
 	return &service{
 		links: links,
 		h:     h,
