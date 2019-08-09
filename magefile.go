@@ -70,6 +70,7 @@ type Gen mg.Namespace
 func (Gen) Wire() {
 	color.Blue("### Wiring dispatchers")
 	mustGoGenerate("HTTP", "go.zenithar.org/shrtn/cli/shrtn/internal/dispatchers/http")
+	mustGoGenerate("GraphQL", "go.zenithar.org/shrtn/cli/shrtn/internal/dispatchers/graphql")
 }
 
 // Generate protobuf

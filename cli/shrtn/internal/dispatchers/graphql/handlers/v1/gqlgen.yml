@@ -1,0 +1,21 @@
+# .gqlgen.yml example
+#
+# Refer to https://gqlgen.com/config/
+# for detailed .gqlgen.yml documentation.
+
+schema:
+- schema.graphql
+exec:
+  filename: generated.go
+model:
+  filename: models_gen.go
+resolver:
+  filename: resolver.go
+  type: Resolver
+autobind: []
+
+models:
+  Link:
+    model: go.zenithar.org/shrtn/pkg/gen/go/shrtn/link/v1.Link
+  NewLink:
+    model: go.zenithar.org/shrtn/pkg/gen/go/shrtn/link/v1.CreateRequest

@@ -1,0 +1,18 @@
+type Link {
+    hash: String!
+    url: String!
+    description: String
+}
+
+type Query {
+    resolve(code:String!): Link! 
+}
+
+input NewLink {
+    url: String!
+    description: String
+}
+
+type Mutation {
+    shorten(input: NewLink!): Link!
+}
