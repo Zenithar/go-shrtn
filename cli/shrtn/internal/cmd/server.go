@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package repositories
+package cmd
 
-import (
-	"context"
+import "github.com/spf13/cobra"
 
-	"go.zenithar.org/shrtn/internal/models"
-)
+// -----------------------------------------------------------------------------
 
-// Link represents link persistence contract.
-type Link interface {
-	Create(ctx context.Context, entity *models.Link) error
-	Get(ctx context.Context, hash string) (*models.Link, error)
-	Delete(ctx context.Context, hash string) error
+var serverCmd = &cobra.Command{
+	Use:     "server",
+	Aliases: []string{"s"},
+	Short:   "Starts a service dispatcher",
+}
+
+// -----------------------------------------------------------------------------
+
+func init() {
+	serverCmd.AddCommand(httpCmd)
+	// serverCmd.AddCommand(grpcCmd)
 }

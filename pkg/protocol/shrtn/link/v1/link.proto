@@ -36,5 +36,5 @@ message Link {
   // Url is the explicit url stored matching the hash.
   string url = 2 [(gogoproto.jsontag) = "url"];
   // Description is the link description.
-  string description = 3 [(gogoproto.jsontag) = "description"];
+  string description = 3 [(gogoproto.jsontag) = "description,omitempty"];
 }

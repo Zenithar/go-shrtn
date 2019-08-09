@@ -22,18 +22,11 @@ import (
 
 	"go.zenithar.org/shrtn/internal/models"
 	"go.zenithar.org/shrtn/internal/repositories"
-	"go.zenithar.org/shrtn/internal/services/internal/hasher"
+	"go.zenithar.org/shrtn/internal/services/helpers/hasher"
 	linkv1 "go.zenithar.org/shrtn/pkg/gen/go/shrtn/link/v1"
 
 	"golang.org/x/xerrors"
 )
-
-// Link defines link management service contract
-type Link interface {
-	Create(ctx context.Context, req *linkv1.CreateRequest) (*linkv1.CreateResponse, error)
-	Resolve(ctx context.Context, req *linkv1.ResolveRequest) (*linkv1.ResolveResponse, error)
-	Delete(ctx context.Context, req *linkv1.DeleteRequest) (*linkv1.DeleteResponse, error)
-}
 
 type service struct {
 	h     hasher.Hasher

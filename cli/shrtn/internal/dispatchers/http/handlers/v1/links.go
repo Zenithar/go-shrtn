@@ -21,6 +21,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"go.zenithar.org/pkg/log"
+	"go.zenithar.org/pkg/web/request"
 	"go.zenithar.org/pkg/web/respond"
 	apiv1 "go.zenithar.org/shrtn/internal/services/pkg/link/v1"
 	linkv1 "go.zenithar.org/shrtn/pkg/gen/go/shrtn/link/v1"
@@ -41,12 +42,41 @@ func LinkRoutes(links apiv1.Link) http.Handler {
 	}
 
 	// Map routes
+	r.Post("/shorten", ctrl.shorten())
 	r.Get("/{hash:[a-zA-Z0-9]+}", ctrl.redirect())
 
 	return r
 }
 
 // -----------------------------------------------------------------------------
+
+func (c *linkCtrl) shorten() http.HandlerFunc {
+	// Handler
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Request type
+		var req linkv1.CreateRequest
+
+		// Prepare context
+		ctx := r.Context()
+
+		// Decode request
+		if err := request.Parse(r, &req); err != nil {
+			respond.WithError(w, r, http.StatusBadRequest, err)
+			return
+		}
+
+		// Do the call
+		res, err := c.links.Create(ctx, &req)
+		if err != nil {
+			log.For(ctx).Error("Unable to query database", log.Error(err))
+			respond.WithError(w, r, http.StatusInternalServerError, "Unable to create a shortened url")
+			return
+		}
+
+		// Marshal response
+		respond.With(w, r, http.StatusCreated, res)
+	}
+}
 
 func (c *linkCtrl) redirect() http.HandlerFunc {
 	// Handler
@@ -60,7 +90,7 @@ func (c *linkCtrl) redirect() http.HandlerFunc {
 		})
 		if err != nil {
 			log.For(ctx).Error("Unable to query database", log.Error(err))
-			respond.WithError(w, r, http.StatusInternalServerError, "Unable to query advisory database")
+			respond.WithError(w, r, http.StatusInternalServerError, "Unable to query shrtn database")
 			return
 		}
 

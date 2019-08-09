@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package repositories
+package v1
 
 import (
 	"context"
 
-	"go.zenithar.org/shrtn/internal/models"
+	linkv1 "go.zenithar.org/shrtn/pkg/gen/go/shrtn/link/v1"
 )
 
-// Link represents link persistence contract.
+// Link defines link management service contract
 type Link interface {
-	Create(ctx context.Context, entity *models.Link) error
-	Get(ctx context.Context, hash string) (*models.Link, error)
-	Delete(ctx context.Context, hash string) error
+	Create(ctx context.Context, req *linkv1.CreateRequest) (*linkv1.CreateResponse, error)
+	Resolve(ctx context.Context, req *linkv1.ResolveRequest) (*linkv1.ResolveResponse, error)
+	Delete(ctx context.Context, req *linkv1.DeleteRequest) (*linkv1.DeleteResponse, error)
 }

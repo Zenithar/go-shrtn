@@ -38,6 +38,7 @@ func init() {
 	mainCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (config.toml)")
 	mainCmd.AddCommand(versionCmd)
 	mainCmd.AddCommand(cmdcfg.NewConfigCommand(conf, "SHRTN"))
+	mainCmd.AddCommand(serverCmd)
 }
 
 // -----------------------------------------------------------------------------

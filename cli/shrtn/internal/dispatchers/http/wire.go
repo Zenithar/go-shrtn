@@ -34,6 +34,7 @@ import (
 	"go.zenithar.org/pkg/log"
 	"go.zenithar.org/pkg/tlsconfig"
 	"go.zenithar.org/shrtn/cli/shrtn/internal/config"
+	"go.zenithar.org/shrtn/cli/shrtn/internal/core"
 	handlerv1 "go.zenithar.org/shrtn/cli/shrtn/internal/dispatchers/http/handlers/v1"
 	linkv1 "go.zenithar.org/shrtn/internal/services/pkg/link/v1"
 )
@@ -105,6 +106,7 @@ func httpServer(ctx context.Context, cfg *config.Configuration, links linkv1.Lin
 
 func setup(ctx context.Context, cfg *config.Configuration) (*http.Server, error) {
 	wire.Build(
+		core.V1Services,
 		httpServer,
 	)
 	return &http.Server{}, nil

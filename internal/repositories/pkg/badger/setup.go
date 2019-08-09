@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-package repositories
+package badger
 
-import (
-	"context"
+import "github.com/google/wire"
 
-	"go.zenithar.org/shrtn/internal/models"
+// RepositorySet exposes Google Wire providers
+var RepositorySet = wire.NewSet(
+	Link,
 )
-
-// Link represents link persistence contract.
-type Link interface {
-	Create(ctx context.Context, entity *models.Link) error
-	Get(ctx context.Context, hash string) (*models.Link, error)
-	Delete(ctx context.Context, hash string) error
-}
